@@ -1,11 +1,22 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require("path");
-const port = process.env.PORT || 3000;
+const ejs = require('ejs');
 
 const app = express();
+
+
+app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+class car {
+  constructor(options) {
+    this.make = options.make;
+  }
+}
+
+
 
 let products = []; 
 
@@ -19,12 +30,22 @@ app.post('/product', (req, res) => {
     res.redirect('/');
 });
 
-app.get('/', (req, res) => {
-    const filePath = path.join(__dirname, 'index.html');
-    console.log('Full file path:', filePath);
-  res.sendFile(filePath);
+
+app.get('/car', (req, res) => {
+  const vehicle = new car({
+    make: req.body.title,
+  });
+  products.push(vehicle);
+  res.render('list', { kindOfDay: products });
 });
 
-app.listen(port, () => {
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+
+
+app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
 });
